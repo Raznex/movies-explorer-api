@@ -1,6 +1,5 @@
 const isEmail = require('validator/lib/isEmail');
 const mongoose = require('mongoose');
-
 const bcrypt = require('bcrypt');
 const WrongEOP = require('../utils/errors/wrongEmailorPass');
 
@@ -53,7 +52,6 @@ const userSchema = new mongoose.Schema(
       },
     },
   },
-
 );
 
 module.exports = mongoose.model('user', userSchema);
