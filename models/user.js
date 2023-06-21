@@ -1,6 +1,6 @@
 const isEmail = require('validator/lib/isEmail');
 const mongoose = require('mongoose');
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 const WrongEOP = require('../utils/errors/wrongEmailorPass');
 
 const userSchema = new mongoose.Schema(
@@ -35,7 +35,7 @@ const userSchema = new mongoose.Schema(
   {
     versionKey: false,
     statics: {
-      findUserByCredentials(email, password) {
+      findUserByCredentials: function(email, password) {
         return this.findOne({ email })
           .select('+password')
           .then((user) => {
@@ -51,7 +51,7 @@ const userSchema = new mongoose.Schema(
           });
       },
     },
-  },
+  }
 );
 
 module.exports = mongoose.model('user', userSchema);

@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 const mongoose = require('mongoose');
 const User = require('../models/user');
 require('dotenv').config();
@@ -47,6 +47,26 @@ module.exports.updateUserInfo = (req, res, next) => {
     });
 };
 
+module.exports.login = (req, res, next) => {
+  const { email, password } = req.body;
+
+  return User
+    .findUserByCredentials(email, password)
+    .then((user) => {
+      const token = jwt.sign(
+        { _id: user._id },
+        NODE_ENV === 'production' ? JWT_SECRET : 'super-strong-secret',
+        { expiresIn: '7d' },
+      );
+      res.status(200).cookie('jwt', token, {
+        maxAge: 3600000 * 24 * 7,
+        httpOnly: true,
+        sameSite: 'none',
+      }).send({ email, token });
+    })
+    .catch(next);
+};
+
 module.exports.register = (req, res, next) => {
   const {
     name, email, password,
@@ -71,24 +91,4 @@ module.exports.register = (req, res, next) => {
         next(err);
       }
     });
-};
-
-module.exports.login = (req, res, next) => {
-  const { email, password } = req.body;
-
-  return User
-    .findUserByCredentials(email, password)
-    .then((user) => {
-      const token = jwt.sign(
-        { _id: user._id },
-        NODE_ENV === 'production' ? JWT_SECRET : 'super-strong-secret',
-        { expiresIn: '7d' },
-      );
-      res.status(200).cookie('jwt', token, {
-        maxAge: 3600000 * 24 * 7,
-        httpOnly: true,
-        sameSite: 'none',
-      }).send({ email, token });
-    })
-    .catch(next);
 };
