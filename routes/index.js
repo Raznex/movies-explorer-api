@@ -2,15 +2,12 @@ const router = require('express').Router();
 const cors = require('cors');
 const { celebrate } = require('celebrate');
 const { errors } = require('celebrate');
-const { requestLogger, errorLogger } = require('../middlewares/logger');
 const auth = require('../middlewares/auth');
 const errorHandler = require('../middlewares/errorHandler');
 const NotFoundError = require('../utils/errors/notFound');
 const { login, register } = require('../controllers/users');
 
 const { JoiBodyEmailPassword, JoiBodyEmailPasswordName } = require('../utils/joyValidation');
-
-router.use(requestLogger);
 
 const allowedCors = [
   'https://praktikum.tk',
@@ -42,11 +39,5 @@ router.use('/users', require('./users'));
 router.use('/movies', require('./movies'));
 
 router.use('*', (req, res, next) => next(new NotFoundError('Страницы по запрошенному URL не существует')));
-
-router.use(errorLogger);
-
-router.use(errors());
-
-router.use(errorHandler);
 
 module.exports = router;
