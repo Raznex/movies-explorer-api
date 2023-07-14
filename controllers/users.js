@@ -6,9 +6,8 @@ require('dotenv').config();
 const NotFoundError = require('../utils/errors/notFound');
 const BadRequestError = require('../utils/errors/badReq');
 const ConflictError = require('../utils/errors/conflict');
-const cfg = require('../cfg');
 
-// const { NODE_ENV, JWT_SECRET } = process.env;
+const { NODE_ENV, JWT_SECRET } = process.env;
 
 module.exports.getUser = (req, res, next) => {
   const { _id } = req.user;
@@ -55,7 +54,7 @@ module.exports.login = (req, res, next) => {
     .then((user) => {
       const token = jwt.sign(
         { _id: user._id },
-        cfg.SECRET_SIGNING_KEY,
+        NODE_ENV === 'production' ? JWT_SECRET : 'super-strong-secret',
         { expiresIn: '7d' },
       );
       res.status(200).cookie('jwt', token, {
