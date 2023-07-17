@@ -2,7 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cookieParser = require('cookie-parser');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
-const cors = require('./middlewares/Cors');
+// const cors = require('./middlewares/Cors');
 require('dotenv').config();
 const helmet = require('helmet');
 const { errors } = require("celebrate");
@@ -18,7 +18,7 @@ mongoose.connect((NODE_ENV === 'production' ? DB_URL : 'mongodb://127.0.0.1:2701
 app.use(requestLogger);
 app.use(helmet());
 app.use(express.json());
-app.use(cors);
+// app.use(cors);
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(require('./routes/index'));
