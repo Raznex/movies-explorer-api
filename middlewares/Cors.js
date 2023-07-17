@@ -3,6 +3,8 @@ const allowedCors = [
   'http://praktikum.tk',
   'http://localhost:3000',
   'http://127.0.0.1:3000',
+  'http://api.diploma.raznex.nomoredomains.rocks',
+  'https://api.diploma.raznex.nomoredomains.rocks',
   'http://diploma.raznex.nomoredomains.rocks',
   'https://diploma.raznex.nomoredomains.rocks',
   'http://192.168.0.197:3000',
