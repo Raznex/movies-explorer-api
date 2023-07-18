@@ -5,7 +5,10 @@ const UnauthorizedError = require('../utils/errors/unAutorize');
 const { NODE_ENV, JWT_SECRET } = process.env;
 
 module.exports = (req, res, next) => {
-  const { token } = req.cookies;
+  const { authorization } = req.headers;
+  const bearer = 'Bearer ';
+  const token = authorization.replace(bearer, '');
+  // const { token } = req.cookies;
 
   if (!token) {
     return next(new UnauthorizedError('Отсутствует jwt токен'));
