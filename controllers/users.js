@@ -1,4 +1,4 @@
-const jwt = require('jsonwebtoken');
+const token = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const mongoose = require('mongoose');
 const User = require('../models/user');
@@ -52,16 +52,16 @@ module.exports.login = (req, res, next) => {
 
   return User.findUserByCredentials(email, password)
     .then((user) => {
-      const token = jwt.sign(
+      const jwt = token.sign(
         { _id: user._id },
         NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret',
         { expiresIn: '7d' },
       );
-      res.status(200).cookie('jwt', token, {
+      res.status(200).cookie('jwt', jwt, {
         maxAge: 3600000 * 24 * 7,
         httpOnly: true,
         sameSite: 'none',
-      }).send({ email, token });
+      }).send({ email, jwt });
     })
     .catch(next);
 };
