@@ -37,7 +37,7 @@ module.exports.updateUserInfo = async (req, res, next) => {
     // Проверяем, не зарегистрирован ли данный email
     const emailRegistered = await isEmailRegistered(email);
     if (emailRegistered) {
-      throw new BadRequestError('Такой email уже зарегистрирован');
+      throw new ConflictError('Такой email уже зарегистрирован');
     }
 
     // Если email не зарегистрирован, обновляем информацию пользователя
