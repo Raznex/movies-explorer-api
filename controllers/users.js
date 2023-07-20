@@ -21,35 +21,48 @@ module.exports.getUser = (req, res, next) => {
     .catch(next);
 };
 
-module.exports.updateUserInfo = (req, res, next) => {
+const isEmailRegistered = async (email) => {
+  try {
+    const user = await User.findOne({ email });
+    return !!user; // Вернуть true, если email найден, и false в противном случае
+  } catch (err) {
+    throw err;
+  }
+};
+
+module.exports.updateUserInfo = async (req, res, next) => {
   const { name, email } = req.body;
-  User.findByIdAndUpdate(
-    req.user._id,
-    { name, email },
-    {
-      new: true,
-      runValidators: true,
-    },
-  )
-    .then((user) => {
-      if (!user) {
-        throw new NotFoundError('Пользователь c указанным _id не найден');
-      }
-      res.send({ user });
-    })
-    .catch((err) => {
-      if (err.code === 11000) {
-        throw new ConflictError(
-          'Пользователь с таким электронным адресом уже зарегистрирован',
-        );
-      }
-      if (err instanceof mongoose.Error.ValidationError) {
-        const message = Object.values(err.errors).map((error) => error.message).join('; ');
-        next(new BadRequestError(message));
-      } else {
-        next(err);
-      }
-    });
+
+  try {
+    // Проверяем, не зарегистрирован ли данный email
+    const emailRegistered = await isEmailRegistered(email);
+    if (emailRegistered) {
+      throw new BadRequestError('Такой email уже зарегистрирован');
+    }
+
+    // Если email не зарегистрирован, обновляем информацию пользователя
+    const user = await User.findByIdAndUpdate(
+      req.user._id,
+      { name, email },
+      {
+        new: true,
+        runValidators: true,
+      },
+    );
+
+    if (!user) {
+      throw new NotFoundError('Пользователь с указанным _id не найден');
+    }
+
+    res.send({ user });
+  } catch (err) {
+    if (err instanceof mongoose.Error.ValidationError) {
+      const message = Object.values(err.errors).map((error) => error.message).join('; ');
+      next(new BadRequestError(message));
+    } else {
+      next(err);
+    }
+  }
 };
 
 module.exports.login = (req, res, next) => {
