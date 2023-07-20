@@ -38,6 +38,11 @@ module.exports.updateUserInfo = (req, res, next) => {
       res.send({ user });
     })
     .catch((err) => {
+      if (err.code === 11000) {
+        throw new ConflictError(
+          'Пользователь с таким электронным адресом уже зарегистрирован',
+        );
+      }
       if (err instanceof mongoose.Error.ValidationError) {
         const message = Object.values(err.errors).map((error) => error.message).join('; ');
         next(new BadRequestError(message));
